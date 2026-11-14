@@ -1,6 +1,8 @@
 console.log('hello world detail')
 
 const backBtn = document.getElementById('back-btn')
+const updateBtn = document.getElementById('update-btn')
+const deleteBtn = document.getElementById('delete-btn')
 const spinnerBox = document.getElementById('spinner-box')
 const url = window.location.href + 'data/'
 
@@ -14,6 +16,15 @@ $.ajax({
     success: function(response){
         console.log(response)
         spinnerBox.classList.add('not-visible')
+        const data = response.data
+
+        if (data.logged_in !== data.author) {
+            console.log('different')
+        } else {
+            console.log('the same')
+            updateBtn.classList.remove('not-visible')
+            deleteBtn.classList.remove('not-visible')
+        }
     },
     error: function(error){
         console.log(error)
