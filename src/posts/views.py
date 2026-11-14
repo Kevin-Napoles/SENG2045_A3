@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from .models import Post
 from django.http import JsonResponse
+from django.views.decorators.http import require_POST
 from .forms import PostForm
 from profiles.models import Profile
 # Create your views here.
@@ -78,3 +79,28 @@ def post_detail(request, pk):
         'form': form,
     }
     return render(request, 'posts/detail.html', context)
+
+
+@require_POST
+def update_post(request, pk):
+    if not request.is_ajax():
+        return JsonResponse({'error': 'Expected an AJAX request.'}, status=400)
+
+    obj = get_object_or_404(Post, pk=pk, author__user_id=request.user.pk)
+    form = PostForm(request.POST, instance=obj)
+    if not form.is_valid():
+        return JsonResponse({'errors': form.errors.get_json_data()}, status=400)
+
+    obj = form.save(commit=False)
+    obj.save(update_fields=('title', 'body', 'updated'))
+    return JsonResponse({'title': obj.title, 'body': obj.body})
+
+
+@require_POST
+def delete_post(request, pk):
+    if not request.is_ajax():
+        return JsonResponse({'error': 'Expected an AJAX request.'}, status=400)
+
+    obj = get_object_or_404(Post, pk=pk, author__user_id=request.user.pk)
+    obj.delete()
+    return JsonResponse({})
