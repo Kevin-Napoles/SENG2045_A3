@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
 
 {% block scripts %}
@@ -11,7 +11,7 @@ posts
 
 {% block content %}
     {% for obj in qs %}
-        {{ obj.title }} {{ obj.body }}<br>
+        {{obj.title}} - {{obj.body}} <br>
     {% endfor %}
     <div id="hello-world"></div>
 {% endblock content %}
