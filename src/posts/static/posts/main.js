@@ -2,7 +2,10 @@ const postsBox = document.getElementById('posts-box')
 const spinnerBox = document.getElementById('spinner-box')
 const loadBtn = document.getElementById('load-btn')
 const endBox = document.getElementById('end-box')
+const addPostModal = document.getElementById('addPostModal')
 const postForm = document.getElementById('post-form')
+const addBtn = document.getElementById('add-btn')
+const dropzone = document.getElementById('my-dropzone')
 const title = document.getElementById('id_title')
 const body = document.getElementById('id_body')
 const csrf = document.getElementsByName('csrfmiddlewaretoken')
@@ -33,6 +36,7 @@ if (deleted !== null) {
 }
 
 let visible = 3
+let postFormSession = 0
 
 const likeUnlikePosts = () => {
     const likeUnlikeForms = [...document.getElementsByClassName('like-unlike-forms')]
@@ -118,10 +122,15 @@ loadBtn.addEventListener('click', () => {
 
 postForm.addEventListener('submit', e => {
     e.preventDefault()
+    if (addBtn.disabled) return
+
+    addBtn.disabled = true
+    const submittedSession = postFormSession
 
     $.ajax({
         type: 'POST',
         url: '',
+        dataType: 'json',
         data: {
             'csrfmiddlewaretoken': csrf[0].value,
             'title': title.value,
@@ -150,13 +159,24 @@ postForm.addEventListener('submit', e => {
                 </div>
             `)
             likeUnlikePosts()
-            $('#addPostModal').modal('hide')
             handleAlerts('success', 'New post added!')
-            postForm.reset()
+            if (submittedSession === postFormSession) {
+                dropzone.classList.remove('not-visible')
+            }
         },
         error: function(error){
             console.log(error)
             handleAlerts('danger', 'ups...something went wrong')
+            if (submittedSession === postFormSession) {
+                addBtn.disabled = false
+            }
         }
     })
+})
+
+addPostModal.addEventListener('hide.bs.modal', () => {
+    postFormSession += 1
+    postForm.reset()
+    dropzone.classList.add('not-visible')
+    addBtn.disabled = false
 })
