@@ -2,7 +2,6 @@ console.log('hello world detail')
 
 const postBox = document.getElementById('post-box')
 const alertBox = document.getElementById('alert-box')
-const backBtn = document.getElementById('back-btn')
 const updateBtn = document.getElementById('update-btn')
 const deleteBtn = document.getElementById('delete-btn')
 const spinnerBox = document.getElementById('spinner-box')
@@ -14,10 +13,6 @@ const csrf = document.getElementsByName('csrfmiddlewaretoken')
 const url = window.location.href + 'data/'
 const updateUrl = window.location.href + 'update/'
 const deleteUrl = window.location.href + 'delete/'
-
-backBtn.addEventListener('click', () => {
-    history.back()
-})
 
 $.ajax({
     type: 'GET',

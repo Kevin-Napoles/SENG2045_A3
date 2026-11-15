@@ -188,7 +188,7 @@ addPostModal.addEventListener('hide.bs.modal', () => {
 Dropzone.autoDiscover = false
 const myDropzone = new Dropzone('#my-dropzone', {
     url: dropzone.action,
-    maxFiles: 5,
+    maxFiles: 3,
     maxFilesize: 4,
     acceptedFiles: '.png,.jpg,.jpeg',
     accept: function(file, done){
