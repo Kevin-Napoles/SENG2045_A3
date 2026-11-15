@@ -1,8 +1,11 @@
+from django.core.exceptions import ValidationError
+from django.db import DatabaseError
+from django.forms import ImageField, IntegerField
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, render
-from .models import Post
-from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .forms import PostForm
+from .models import Photo, Post
 from profiles.models import Profile
 # Create your views here.
 
@@ -104,3 +107,29 @@ def delete_post(request, pk):
     obj = get_object_or_404(Post, pk=pk, author__user_id=request.user.pk)
     obj.delete()
     return JsonResponse({})
+
+
+@require_POST
+def image_upload_view(request):
+    try:
+        new_post_id = IntegerField(min_value=1, max_value=2**63 - 1).clean(
+            request.POST.get('new_post_id')
+        )
+    except ValidationError as error:
+        return HttpResponseBadRequest(error.messages[0], content_type='text/plain')
+
+    post = get_object_or_404(Post, pk=new_post_id, author__user_id=request.user.pk)
+
+    try:
+        img = ImageField().clean(request.FILES.get('file'))
+    except ValidationError as error:
+        return HttpResponseBadRequest(error.messages[0], content_type='text/plain')
+
+    photo = Photo(post=post)
+    photo.image.save(img.name, img, save=False)
+    try:
+        photo.save()
+    except DatabaseError:
+        photo.image.delete(save=False)
+        raise
+    return HttpResponse()
