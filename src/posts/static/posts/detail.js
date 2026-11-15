@@ -80,3 +80,23 @@ updateForm.addEventListener('submit', e => {
         }
     })
 })
+
+deleteForm.addEventListener('submit', e => {
+    e.preventDefault()
+
+    $.ajax({
+        type: 'POST',
+        url: deleteUrl,
+        data: {
+            'csrfmiddlewaretoken': deleteForm.elements.csrfmiddlewaretoken.value,
+        },
+        success: function(){
+            const title = document.getElementById('title').textContent
+            localStorage.setItem('title', title)
+            window.location.href = window.location.origin
+        },
+        error: function(error){
+            console.log(error)
+        }
+    })
+})

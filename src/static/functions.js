@@ -1,7 +1,7 @@
 const handleAlerts = (type, msg) => {
-    alertBox.innerHTML = `
-        <div class="alert alert-${type}" role="alert">
-            ${msg}
-        </div>
-    `
+    const alert = document.createElement('div')
+    alert.className = `alert alert-${type}`
+    alert.setAttribute('role', 'alert')
+    alert.textContent = msg
+    alertBox.replaceChildren(alert)
 }
